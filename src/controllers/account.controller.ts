@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Client, AccountBalanceQuery, PrivateKey, AccountId } from '@hashgraph/sdk';
+import { Client, AccountBalanceQuery, AccountCreateTransaction, Hbar, PrivateKey, AccountId } from '@hashgraph/sdk';
 
 class AccountController {
   private getClient() {
@@ -22,6 +22,21 @@ class AccountController {
       const balance = await new AccountBalanceQuery().setAccountId(accountId).execute(client);
       console.log(`${accountId.toString()} balance = ${balance.hbars.toString()}`);
       res.status(200).json({ data: balance, message: 'getAccountBalance' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const client = this.getClient();
+      const newKey = PrivateKey.generate();
+      console.log(`private key = ${newKey.toString()}`);
+      console.log(`public key = ${newKey.publicKey.toString()}`);
+      const response = await new AccountCreateTransaction().setInitialBalance(new Hbar(10)).setKey(newKey.publicKey).execute(client);
+      const receipt = await response.getReceipt(client);
+      console.log(`account id = ${receipt.accountId.toString()}`);
+      res.status(200).json({ data: receipt, message: 'createAccount' });
     } catch (error) {
       next(error);
     }
