@@ -2,5 +2,13 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "editor.formatOnSave": false
+  "editor.formatOnSave": false,
+  "cSpell.ignoreWords": [
+    "HEDERA",
+    "Hbar",
+    "Tinybars",
+    "hbars",
+    "tinybar",
+    "tranfer"
+  ]
 }

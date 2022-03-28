@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Client, AccountBalanceQuery, AccountCreateTransaction, Hbar, PrivateKey, AccountId } from '@hashgraph/sdk';
+import { AccountBalanceQuery, AccountCreateTransaction, AccountId, Client, Hbar, PrivateKey, TransferTransaction } from '@hashgraph/sdk';
 
 class AccountController {
   private getClient() {
@@ -37,6 +37,37 @@ class AccountController {
       const receipt = await response.getReceipt(client);
       console.log(`account id = ${receipt.accountId.toString()}`);
       res.status(200).json({ data: receipt, message: 'createAccount' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public tranferHbar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const client = this.getClient();
+      const accountId = req.params.accountId;
+      const newAccountPrivateKey = await PrivateKey.generateED25519();
+      const newAccountPublicKey = newAccountPrivateKey.publicKey;
+      const newAccountTransactionResponse = await new AccountCreateTransaction()
+        .setKey(newAccountPublicKey)
+        .setInitialBalance(Hbar.fromTinybars(1000))
+        .execute(client);
+      const getReceipt = await newAccountTransactionResponse.getReceipt(client);
+      const newAccountId = getReceipt.accountId;
+      console.log(`The new account ID is: ${newAccountId}`);
+      const accountBalance = await new AccountBalanceQuery().setAccountId(newAccountId).execute(client);
+      console.log(`The new account balance is: ${accountBalance.hbars.toTinybars()} tinybar.`);
+      const sendHbar = await new TransferTransaction()
+        .addHbarTransfer(accountId, Hbar.fromTinybars(-10))
+        .addHbarTransfer(newAccountId, Hbar.fromTinybars(10))
+        .execute(client);
+      const transactionReceipt = await sendHbar.getReceipt(client);
+      console.log(`The transfer transaction from my account to the new account was: ${transactionReceipt.status.toString()}`);
+      const queryCost = await new AccountBalanceQuery().setAccountId(newAccountId).getCost(client);
+      console.log(`The cost of query is: ${queryCost}`);
+      const getNewBalance = await new AccountBalanceQuery().setAccountId(newAccountId).execute(client);
+      console.log(`The account balance after the transfer is: ${getNewBalance.hbars.toTinybars()} tinybar.`);
+      res.status(200).json({ data: getNewBalance, message: 'transferHbar' });
     } catch (error) {
       next(error);
     }
