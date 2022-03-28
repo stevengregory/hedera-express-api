@@ -1,23 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import { AccountBalanceQuery, AccountCreateTransaction, AccountId, Client, Hbar, PrivateKey, TransferTransaction } from '@hashgraph/sdk';
+import { AccountBalanceQuery, AccountCreateTransaction, Hbar, PrivateKey, TransferTransaction } from '@hashgraph/sdk';
+import HederaService from '@services/hedera.service';
 
 class AccountController {
-  private getClient() {
-    let client;
-    try {
-      client = Client.forName(process.env.HEDERA_NETWORK).setOperator(
-        AccountId.fromString(process.env.OPERATOR_ID),
-        PrivateKey.fromString(process.env.OPERATOR_KEY),
-      );
-    } catch (error) {
-      throw new Error('Environment variables HEDERA_NETWORK, OPERATOR_ID, and OPERATOR_KEY are required.');
-    }
-    return client;
-  }
+  public hederaService = new HederaService();
 
   public getAccountBalance = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const client = this.getClient();
+      const client = this.hederaService.getClient();
       const accountId = req.params.accountId;
       const balance = await new AccountBalanceQuery().setAccountId(accountId).execute(client);
       console.log(`${accountId.toString()} balance = ${balance.hbars.toString()}`);
@@ -32,7 +22,7 @@ class AccountController {
 
   public createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const client = this.getClient();
+      const client = this.hederaService.getClient();
       const newKey = PrivateKey.generate();
       console.log(`private key = ${newKey.toString()}`);
       console.log(`public key = ${newKey.publicKey.toString()}`);
@@ -50,7 +40,7 @@ class AccountController {
 
   public transferHbar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const client = this.getClient();
+      const client = this.hederaService.getClient();
       const accountId = req.params.accountId;
       const transferAmount = 10;
       const newAccountPrivateKey = await PrivateKey.generateED25519();
