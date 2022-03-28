@@ -21,7 +21,10 @@ class AccountController {
       const accountId = req.params.accountId;
       const balance = await new AccountBalanceQuery().setAccountId(accountId).execute(client);
       console.log(`${accountId.toString()} balance = ${balance.hbars.toString()}`);
-      res.status(200).json({ data: balance, message: 'getAccountBalance' });
+      res.status(200).json({
+        data: { accountId: accountId.toString(), balance: balance.hbars.toString() },
+        message: 'getAccountBalance',
+      });
     } catch (error) {
       next(error);
     }
@@ -36,7 +39,10 @@ class AccountController {
       const response = await new AccountCreateTransaction().setInitialBalance(new Hbar(10)).setKey(newKey.publicKey).execute(client);
       const receipt = await response.getReceipt(client);
       console.log(`account id = ${receipt.accountId.toString()}`);
-      res.status(200).json({ data: receipt, message: 'createAccount' });
+      res.status(200).json({
+        data: { accountId: receipt.accountId.toString(), publicKey: newKey.publicKey.toString(), privateKey: newKey.toString() },
+        message: 'createAccount',
+      });
     } catch (error) {
       next(error);
     }
@@ -67,7 +73,10 @@ class AccountController {
       console.log(`The cost of query is: ${queryCost}`);
       const getNewBalance = await new AccountBalanceQuery().setAccountId(newAccountId).execute(client);
       console.log(`The account balance after the transfer is: ${getNewBalance.hbars.toTinybars()} tinybar.`);
-      res.status(200).json({ data: getNewBalance, message: 'transferHbar' });
+      res.status(200).json({
+        data: { accountId: newAccountId.toString(), balance: getNewBalance.hbars.toString(), queryCost: queryCost._valueInTinybar },
+        message: 'transferHbar',
+      });
     } catch (error) {
       next(error);
     }
