@@ -15,7 +15,7 @@ class AccountRoute implements Routes {
   private initializeRoutes() {
     this.router.get(`${this.path}/:accountId`, this.accountController.getAccountBalance);
     this.router.post(`${this.path}`, validationMiddleware(null, 'body'), this.accountController.createAccount);
-    this.router.post(`${this.path}/:accountId`, validationMiddleware(null, 'body'), this.accountController.tranferHbar);
+    this.router.post(`${this.path}/:accountId`, validationMiddleware(null, 'body'), this.accountController.transferHbar);
   }
 }
 
