@@ -9,8 +9,7 @@ class AccountController {
   public getAccountBalance = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const accountId = req.params.accountId;
-      const balance = await new AccountBalanceQuery().setAccountId(accountId).execute(this.client);
-      console.log(`${accountId.toString()} balance = ${balance.hbars.toString()}`);
+      const balance = await this.hederaService.getAccountBalance(accountId);
       res.status(200).json({
         data: { accountId: accountId.toString(), balance: balance.hbars.toString() },
         message: 'getAccountBalance',
