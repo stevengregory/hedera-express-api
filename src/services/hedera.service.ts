@@ -16,7 +16,7 @@ class HederaService {
     return client;
   }
 
-  public async getAccountBalance(accountId) {
+  public async getAccountBalance(accountId: string) {
     const client = await this.client;
     const balance = await new AccountBalanceQuery().setAccountId(accountId).execute(client);
     console.log(`${accountId.toString()} balance = ${balance.hbars.toString()}`);
@@ -41,7 +41,7 @@ class HederaService {
     };
   }
 
-  public async transferHbar(accountId) {
+  public async transferHbar(accountId: string) {
     const client = await this.client;
     const transferAmount = 10;
     const newAccountPrivateKey = await PrivateKey.generateED25519();
