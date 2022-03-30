@@ -4,6 +4,8 @@ import {
   AccountCreateTransaction,
   AccountDeleteTransaction,
   Client,
+  TopicCreateTransaction,
+  TopicMessageSubmitTransaction,
   Hbar,
   PrivateKey,
   TransferTransaction,
@@ -47,6 +49,24 @@ class HederaService {
       accountId: receipt.accountId.toString(),
       publicKey: newKey.publicKey.toString(),
       privateKey: newKey.toString(),
+    };
+  }
+
+  public async createTopic(message: string) {
+    const client = await this.client;
+    const createResponse = await new TopicCreateTransaction().execute(client);
+    const createReceipt = await createResponse.getReceipt(client);
+    console.log(`topic id = ${createReceipt.topicId.toString()}`);
+    const sendResponse = await new TopicMessageSubmitTransaction({
+      topicId: createReceipt.topicId,
+      message: message,
+    }).execute(client);
+    const sendReceipt = await sendResponse.getReceipt(client);
+    console.log(`topic sequence number = ${sendReceipt.topicSequenceNumber.toString()}`);
+    return {
+      message: message.toString(),
+      topicId: createReceipt.topicId.toString(),
+      sequenceNumber: sendReceipt.topicSequenceNumber.toString(),
     };
   }
 
