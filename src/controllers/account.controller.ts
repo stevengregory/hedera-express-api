@@ -6,8 +6,7 @@ class AccountController {
 
   public getAccountBalance = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const accountId = req.params.accountId;
-      const data = await this.hederaService.getAccountBalance(accountId);
+      const data = await this.hederaService.getAccountBalance(req.params.accountId);
       res.status(200).json({
         data: data,
         message: 'getAccountBalance',
@@ -31,8 +30,7 @@ class AccountController {
 
   public transferHbar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const accountId = req.params.accountId;
-      const data = await this.hederaService.transferHbar(accountId);
+      const data = await this.hederaService.transferHbar(req.params.accountId);
       res.status(200).json({
         data: data,
         message: 'transferHbar',
