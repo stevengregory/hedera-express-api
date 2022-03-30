@@ -29,6 +29,18 @@ class AccountController {
     }
   };
 
+  public deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.hederaService.deleteAccount();
+      res.status(200).json({
+        data: data,
+        message: 'deleteAccount',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public transferHbar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const accountId: string = req.params.accountId;

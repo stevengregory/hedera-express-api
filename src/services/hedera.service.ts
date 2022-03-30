@@ -1,4 +1,13 @@
-import { AccountId, AccountBalanceQuery, AccountCreateTransaction, Client, Hbar, PrivateKey, TransferTransaction } from '@hashgraph/sdk';
+import {
+  AccountId,
+  AccountBalanceQuery,
+  AccountCreateTransaction,
+  AccountDeleteTransaction,
+  Client,
+  Hbar,
+  PrivateKey,
+  TransferTransaction,
+} from '@hashgraph/sdk';
 
 class HederaService {
   public client = this.getClient();
@@ -38,6 +47,27 @@ class HederaService {
       accountId: receipt.accountId.toString(),
       publicKey: newKey.publicKey.toString(),
       privateKey: newKey.toString(),
+    };
+  }
+
+  public async deleteAccount() {
+    const client = await this.client;
+    const newKey = PrivateKey.generate();
+    console.log(`private key = ${newKey.toString()}`);
+    console.log(`public key = ${newKey.publicKey.toString()}`);
+    const response = await new AccountCreateTransaction().setInitialBalance(new Hbar(10)).setKey(newKey.publicKey).execute(client);
+    const receipt = await response.getReceipt(client);
+    console.log(`created account id = ${receipt.accountId.toString()}`);
+    const transaction = new AccountDeleteTransaction()
+      .setNodeAccountIds([response.nodeId])
+      .setAccountId(receipt.accountId)
+      .setTransferAccountId(client.operatorAccountId)
+      .freezeWith(client);
+    newKey.signTransaction(transaction);
+    await transaction.execute(client);
+    console.log(`deleted account id = ${receipt.accountId.toString()}`);
+    return {
+      accountId: receipt.accountId.toString(),
     };
   }
 
