@@ -29,19 +29,6 @@ class AccountController {
     }
   };
 
-  public createTopic = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const message: string = req.params.message;
-      const data = await this.hederaService.createTopic(message);
-      res.status(200).json({
-        data: data,
-        message: 'createTopic',
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
   public deleteAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data = await this.hederaService.deleteAccount();
