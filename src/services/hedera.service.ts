@@ -64,7 +64,7 @@ class HederaService {
     const sendReceipt = await sendResponse.getReceipt(client);
     console.log(`topic sequence number = ${sendReceipt.topicSequenceNumber.toString()}`);
     return {
-      message: message.toString(),
+      message: message,
       topicId: createReceipt.topicId.toString(),
       sequenceNumber: sendReceipt.topicSequenceNumber.toString(),
     };
