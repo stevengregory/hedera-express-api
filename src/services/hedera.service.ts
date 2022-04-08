@@ -12,10 +12,10 @@ import {
 } from '@hashgraph/sdk';
 
 class HederaService {
-  public client = this.getClient();
+  private client = this.getClient();
 
-  public async getClient() {
-    let client;
+  private async getClient() {
+    let client: Client;
     try {
       client = Client.forName(process.env.HEDERA_NETWORK).setOperator(
         AccountId.fromString(process.env.OPERATOR_ID),
