@@ -6,9 +6,12 @@ import {
   Client,
   TopicCreateTransaction,
   TopicMessageSubmitTransaction,
+  TokenCreateTransaction,
   Hbar,
   PrivateKey,
   TransferTransaction,
+  TokenSupplyType,
+  TokenType,
 } from '@hashgraph/sdk';
 
 class HederaService {
@@ -49,6 +52,33 @@ class HederaService {
       accountId: receipt.accountId.toString(),
       publicKey: newKey.publicKey.toString(),
       privateKey: newKey.toString(),
+    };
+  }
+
+  public async createNft(treasuryId: string, tokenName: string, tokenSymbol: string) {
+    const client = await this.client;
+    const supplyKey = PrivateKey.generateED25519();
+    const treasuryKey = PrivateKey.fromString(process.env.OPERATOR_KEY);
+    const nftCreate = await new TokenCreateTransaction()
+      .setTokenName(tokenName)
+      .setTokenSymbol(tokenSymbol)
+      .setTokenType(TokenType.NonFungibleUnique)
+      .setDecimals(0)
+      .setInitialSupply(0)
+      .setTreasuryAccountId(treasuryId)
+      .setSupplyType(TokenSupplyType.Finite)
+      .setMaxSupply(250)
+      .setSupplyKey(supplyKey)
+      .freezeWith(client);
+    const nftCreateTxSign = await nftCreate.sign(treasuryKey);
+    const nftCreateSubmit = await nftCreateTxSign.execute(client);
+    const nftCreateRx = await nftCreateSubmit.getReceipt(client);
+    const tokenId = nftCreateRx.tokenId;
+    console.log(`- Created NFT with Token ID: ${tokenId.toString()} \n`);
+    return {
+      tokenId: tokenId.toString(),
+      tokenName: tokenName,
+      tokenSymbol: tokenSymbol,
     };
   }
 
