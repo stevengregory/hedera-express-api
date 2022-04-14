@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import TopicController from '@controllers/topic.controller';
 import { Routes } from '@interfaces/routes.interface';
-import validationMiddleware from '@middlewares/validation.middleware';
 
 class TopicRoute implements Routes {
   public path = '/topic';
@@ -13,7 +12,7 @@ class TopicRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/:message`, validationMiddleware(null, 'body'), this.topicController.createTopic);
+    this.router.post(`${this.path}/:message`, this.topicController.createTopic);
   }
 }
 

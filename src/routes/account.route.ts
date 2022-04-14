@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import AccountController from '@controllers/account.controller';
 import { Routes } from '@interfaces/routes.interface';
-import validationMiddleware from '@middlewares/validation.middleware';
 
 class AccountRoute implements Routes {
   public path = '/account';
@@ -14,8 +13,8 @@ class AccountRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}/:accountId`, this.accountController.getAccountBalance);
-    this.router.post(`${this.path}`, validationMiddleware(null, 'body'), this.accountController.createAccount);
-    this.router.post(`${this.path}/:accountId`, validationMiddleware(null, 'body'), this.accountController.transferHbar);
+    this.router.post(`${this.path}`, this.accountController.createAccount);
+    this.router.post(`${this.path}/:accountId`, this.accountController.transferHbar);
     this.router.delete(`${this.path}`, this.accountController.deleteAccount);
   }
 }
