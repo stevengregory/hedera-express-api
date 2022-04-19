@@ -10,6 +10,7 @@ import {
   Hbar,
   PrivateKey,
   TransferTransaction,
+  TokenMintTransaction,
   TokenSupplyType,
   TokenType,
 } from '@hashgraph/sdk';
@@ -59,6 +60,7 @@ class HederaService {
     const client = await this.client;
     const supplyKey = PrivateKey.generateED25519();
     const treasuryKey = PrivateKey.fromString(process.env.OPERATOR_KEY);
+    const CID = 'QmTzWcVfk88JRqjTpVwHzBeULRTNzHY7mnBSG42CpwHmPa';
     const nftCreate = await new TokenCreateTransaction()
       .setTokenName(tokenName)
       .setTokenSymbol(tokenSymbol)
@@ -73,9 +75,11 @@ class HederaService {
     const nftCreateTxSign = await nftCreate.sign(treasuryKey);
     const nftCreateSubmit = await nftCreateTxSign.execute(client);
     const nftCreateRx = await nftCreateSubmit.getReceipt(client);
-    const tokenId = nftCreateRx.tokenId;
+    const tokenId = await nftCreateRx.tokenId;
+    this.mintNft(client, supplyKey, tokenId, CID);
     console.log(`- Created NFT with Token ID: ${tokenId.toString()} \n`);
     return {
+      supplyKey: supplyKey.toString(),
       tokenId: tokenId.toString(),
       tokenName: tokenName,
       tokenSymbol: tokenSymbol,
@@ -119,6 +123,17 @@ class HederaService {
     return {
       accountId: receipt.accountId.toString(),
     };
+  }
+
+  private async mintNft(client: Client, supplyKey: any, tokenId: any, CID: string) {
+    const mintTx = await new TokenMintTransaction()
+      .setTokenId(tokenId)
+      .setMetadata([Buffer.from(CID)])
+      .freezeWith(client);
+    const mintTxSign = await mintTx.sign(supplyKey);
+    const mintTxSubmit = await mintTxSign.execute(client);
+    const mintRx = await mintTxSubmit.getReceipt(client);
+    return mintRx;
   }
 
   public async transferHbar(accountId: string) {
