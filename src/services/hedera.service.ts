@@ -43,7 +43,7 @@ class HederaService {
 
   public async createAccount() {
     const client = await this.client;
-    const newKey = PrivateKey.generate();
+    const newKey: PrivateKey = PrivateKey.generate();
     console.log(`- Private key = ${newKey.toString()}`);
     console.log(`- Public key = ${newKey.publicKey.toString()}`);
     const response = await new AccountCreateTransaction().setInitialBalance(new Hbar(10)).setKey(newKey.publicKey).execute(client);
@@ -58,7 +58,7 @@ class HederaService {
 
   public async createNft(treasuryId: string, tokenName: string, tokenSymbol: string) {
     const client = await this.client;
-    const supplyKey = PrivateKey.generateED25519();
+    const supplyKey: PrivateKey = PrivateKey.generateED25519();
     const treasuryKey = PrivateKey.fromString(process.env.OPERATOR_KEY);
     const CID = 'QmTzWcVfk88JRqjTpVwHzBeULRTNzHY7mnBSG42CpwHmPa';
     const nftCreate = await new TokenCreateTransaction()
@@ -106,7 +106,7 @@ class HederaService {
 
   public async deleteAccount() {
     const client = await this.client;
-    const newKey = PrivateKey.generate();
+    const newKey: PrivateKey = PrivateKey.generate();
     console.log(`- Private key = ${newKey.toString()}`);
     console.log(`- Public key = ${newKey.publicKey.toString()}`);
     const response = await new AccountCreateTransaction().setInitialBalance(new Hbar(10)).setKey(newKey.publicKey).execute(client);
@@ -125,7 +125,7 @@ class HederaService {
     };
   }
 
-  private async mintNft(client: Client, supplyKey: any, tokenId: any, CID: string) {
+  private async mintNft(client: Client, supplyKey: PrivateKey, tokenId: any, CID: string) {
     const mintTx = await new TokenMintTransaction()
       .setTokenId(tokenId)
       .setMetadata([Buffer.from(CID)])
@@ -139,7 +139,7 @@ class HederaService {
   public async transferHbar(accountId: string) {
     const client = await this.client;
     const transferAmount = 10;
-    const newAccountPrivateKey = await PrivateKey.generateED25519();
+    const newAccountPrivateKey: PrivateKey = await PrivateKey.generateED25519();
     const newAccountPublicKey = newAccountPrivateKey.publicKey;
     const newAccountTransactionResponse = await new AccountCreateTransaction()
       .setKey(newAccountPublicKey)
