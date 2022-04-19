@@ -1,6 +1,6 @@
 # Hedera Express API
 
-An experimental Hedera API written with Node.js and TypeScript.
+An experimental [Hedera](https://hedera.com/) API written with Node.js and TypeScript. Uses the [JavaScript SDK](https://github.com/hashgraph/hedera-sdk-js) to interact with the Hedera Hashgraph.
 
 ## Setup
 
