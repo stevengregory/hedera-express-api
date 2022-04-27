@@ -26,3 +26,11 @@ Run the application in dev mode.
 ```bash
 npm run dev
 ```
+
+## Run tests
+
+Run the unit tests.
+
+```bash
+npm run tests
+```
