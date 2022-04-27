@@ -2,6 +2,11 @@
 
 An experimental [Hedera](https://hedera.com/) API written with Node.js and TypeScript. Uses the [JavaScript SDK](https://github.com/hashgraph/hedera-sdk-js) to interact with the Hedera Hashgraph.
 
+## Prerequisites
+
+- [Node.js](https://nodejs.org/)
+- Create a developer [Testnet account](https://portal.hedera.com/register) on the hedera portal
+
 ## Setup
 
 Clone the repo and change directory.
